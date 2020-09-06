@@ -84,7 +84,7 @@ def main(args):
 if __name__ == '__main__':
     argparser = ArgumentParser('python3 cli-corona.py', description="Cli Corona diagram generator")
     argparser.add_argument('countries', metavar='countries', type=str, nargs='+',
-                           help="countries to track in the diagram")
+                           help="countries ISO 3166-1 alpha-2 code to track in the diagram")
     argparser.add_argument('--daily', action='store_true', dest='daily',
                            help="if set, include daily new cases, otherwise include cumulative number of cases")
     argparser.add_argument('--ave', dest='ave', type=int, default=7,

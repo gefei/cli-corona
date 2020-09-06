@@ -12,7 +12,7 @@ python3 cli-corona.py [-h] [--daily] [--ave AVE] [--per100k] [--width WIDTH] [--
 
 ### positional arguments
 ```
-countries        countries in ISO31666-1 alpha-2 code to track in the diagram
+countries        countries in ISO 3166-1 alpha-2 code to track in the diagram
 ```
 
 ### optional arguments
