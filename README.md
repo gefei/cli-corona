@@ -6,11 +6,14 @@ Cli tool to generate up-to-date diagram of corona data.
 `https://interaktiv.morgenpost.de/data/corona/history.light.v4.csv`
 
 ## usage
-`python3 cli-corona.py [-h] [--daily] [--ave AVE] [--per100k] [--width WIDTH] [--height HEIGHT] [--png PNG] [--html HTML] [--show] countries [countries ...]`
+```
+python3 cli-corona.py [-h] [--daily] [--ave AVE] [--per100k] [--width WIDTH] [--height HEIGHT] [--png PNG] [--html HTML] [--show] countries [countries ...]
+```
 
 ### positional arguments
-
-  `countries        countries to track in the diagram`
+```
+countries        countries in ISO31666-1 alpha-2 code to track in the diagram
+```
 
 ### optional arguments
   ```
