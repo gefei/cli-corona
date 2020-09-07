@@ -59,22 +59,33 @@ def plot_a_country(pic, df, country, daily, ave, per100k, color):
         pic.line(tx, ty, legend_label=country+' confirmed', color=color, line_dash='dashed')
 
 
-def get_dataframe():
+def get_dataframe(start, end):
     url = 'https://interaktiv.morgenpost.de/data/corona/history.light.v4.csv'
     df = pd.read_csv(url)
+    if start:
+        df = df[df['date'] >= start]
+    if end:
+        df = df[df['date'] <= end]
     return df
 
 def main(args):
     if args.html:
         output_file(args.html)
     colors = color_gen()
-    df = get_dataframe()
-    last_date = df['date'].max()
-    title = '{}-{}'.format('-'.join(args.countries).upper(), last_date)
+    df = get_dataframe(args.start, args.end)
+    print(df[df['id']=='de']['date'])
+    first_date, last_date = df['date'].min(), df['date'].max()
+    title = '{}-{}-{}'.format('-'.join(args.countries).upper(), first_date, last_date)
     p = figure(title=title, width=args.width, height=args.height)
     p.xaxis.formatter=DatetimeTickFormatter(days='%m/%d', months='%m/%d', years='%y%m%d')
     for country in args.countries:
-        plot_a_country(p , df, country, args.daily, args.ave, args.per100k, next(colors))
+        plot_a_country(pic=p,
+                       df=df,
+                       country=country,
+                       daily=args.daily,
+                       ave=args.ave,
+                       per100k=args.per100k,
+                       color=next(colors))
     if args.png:
         export_png(p, filename=args.png)
     if args.html and args.show:
@@ -91,10 +102,12 @@ if __name__ == '__main__':
                            help="include AVE day rolling average. Effective only when --daily is set. Default=7")
     argparser.add_argument('--per100k', action='store_true', dest='per100k',
                            help="normalize the numbers to 100k population")
-    argparser.add_argument('--width', dest='width', default=1000,
+    argparser.add_argument('--width', dest='width', type=int, default=1000,
                            help="width of the diagram")
-    argparser.add_argument('--height', dest='height', default=500,
+    argparser.add_argument('--height', dest='height', type=int, default=500,
                            help="height of the diagram")
+    argparser.add_argument('--start', dest='start', type=int, help="first day to track. Format: yyyymmdd")
+    argparser.add_argument('--end', dest='end', type=int, help="last day to track. Format: yyyymmdd")
     argparser.add_argument('--png', dest='png',
                            help="if set, diagram in png will be saved under this name")
     argparser.add_argument('--html', dest='html',
