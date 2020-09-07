@@ -42,9 +42,8 @@ def plot_a_country(pic, df, country, daily, ave, per100k, color):
     df_country['new'] = tmp.diff(periods=1,axis=0)
     if (per100k):
         df_country['new'] = df_country['new'] / df_country['population'] * 100000
-    tmp = df_country[['new']]
-    tmp.ave = tmp.rolling(ave, win_type='triang').mean()
-    df_country['ave'] = tmp.ave
+    if ave > 0:
+        df_country['ave'] = df_country['new'].rolling(ave).mean()
     data = ColumnDataSource(df_country)
 
     tx = data.data['dateRep']

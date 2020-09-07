@@ -23,8 +23,8 @@ countries        countries in ISO 3166-1 alpha-2 code to track in the diagram
   --per100k        normalize the numbers to 100k population
   --width WIDTH    width of the diagram
   --height HEIGHT  height of the diagram
-  --width WIDTH    width of the diagram
-  --height HEIGHT  height of the diagram
+  --start START    first day to track. Format: yyyymmdd
+  --end END        last day to track. Format: yyyymmdd
   --png PNG        if set, diagram in png will be saved under this name
   --html HTML      if set, html output will be saved under this name
   --show           if set, diagram will be shown in the browser. Only effective when --html is set
