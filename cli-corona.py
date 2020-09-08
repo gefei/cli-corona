@@ -34,7 +34,7 @@ from argparse import ArgumentParser
 def color_gen():
     yield from itertools.cycle(Category10[10])
 
-def plot_a_id(pic, df, id, daily, ave, per100k, color):
+def plot_a_id(pic, df, id, daily, ave, cumu, per100k, color):
     df_country=df[df['id'] == id]
     df_country['dateRep'] = pd.to_datetime(df.date, format='%Y%m%d')
 
@@ -51,12 +51,12 @@ def plot_a_id(pic, df, id, daily, ave, per100k, color):
         ty = data.data['new']
         daily_line_dash = 'dashed' if ave > 0 else 'solid'
         pic.line(tx, ty, legend_label=id+' daily new', color=color, line_dash=daily_line_dash)
-        if ave > 0:
-            ty=data.data['ave']
-            pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
-    else:
+    if ave > 0:
+        ty=data.data['ave']
+        pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
+    if cumu:
         ty = data.data['confirmed']
-        pic.line(tx, ty, legend_label=id+' confirmed', color=color, line_dash='dashed')
+        pic.line(tx, ty, legend_label=id+' confirmed', color=color, line_dash='dotted')
 
 
 def get_dataframe(start, end):
@@ -86,7 +86,6 @@ def main(args):
     if args.html:
         output_file(args.html)
     colors = color_gen()
-    print(df[df['id']=='de']['date'])
     first_date, last_date = df['date'].min(), df['date'].max()
     title = '{}-{}-{}'.format('-'.join(args.ids).upper(), first_date, last_date)
     p = figure(title=title, width=args.width, height=args.height)
@@ -97,6 +96,7 @@ def main(args):
                        id=id,
                        daily=args.daily,
                        ave=args.ave,
+                       cumu=args.cumu,
                        per100k=args.per100k,
                        color=next(colors))
     if args.png:
@@ -113,8 +113,10 @@ if __name__ == '__main__':
                            help="search for id")
     argparser.add_argument('--daily', action='store_true', dest='daily',
                            help="if set, include daily new cases, otherwise include cumulative number of cases")
-    argparser.add_argument('--ave', dest='ave', type=int, default=7,
-                           help="include AVE day rolling average. Effective only when --daily is set. Default=7")
+    argparser.add_argument('--ave', dest='ave', type=int, default=0,
+                           help="include AVE day rolling average")
+    argparser.add_argument('--cumu', action='store_true',
+                           help="if set, include cumulative numbers")
     argparser.add_argument('--per100k', action='store_true', dest='per100k',
                            help="normalize the numbers to 100k population")
     argparser.add_argument('--width', dest='width', type=int, default=1000,
