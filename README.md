@@ -7,25 +7,29 @@ Cli tool to generate up-to-date diagram of corona data.
 
 ## usage
 ```
-python3 cli-corona.py [-h] [--daily] [--ave AVE] [--per100k] [--width WIDTH] [--height HEIGHT] [--start START] [--end END] [--png PNG] [--html HTML] [--show] countries [countries ...]
-```
-
-### positional arguments
-```
-countries        countries in ISO 3166-1 alpha-2 code to track in the diagram
+python3 cli-corona.py [-h] [--ids [IDS [IDS ...]]] [--search SEARCH_ITEM]
+                             [--daily] [--ave AVE] [--per100k] [--width WIDTH]
+                             [--height HEIGHT] [--start START] [--end END] [--png PNG]
+                             [--html HTML] [--show]
 ```
 
 ### optional arguments
   ```
-  -h, --help       show this help message and exit
-  --daily          if set, include daily new cases, otherwise include cumulative number of cases
-  --ave AVE        include AVE day rolling average. Effective only when --daily is set. Default=7
-  --per100k        normalize the numbers to 100k population
-  --width WIDTH    width of the diagram
-  --height HEIGHT  height of the diagram
-  --start START    first day to track. Format: yyyymmdd
-  --end END        last day to track. Format: yyyymmdd
-  --png PNG        if set, diagram in png will be saved under this name
-  --html HTML      if set, html output will be saved under this name
-  --show           if set, diagram will be shown in the browser. Only effective when --html is set
+  --ids [IDS [IDS ...]]
+                        ids of regions to track in the diagram. Country ids are ISO
+                        3166-1 alpha-2 codes. See also --search
+  --search SEARCH_ITEM  search for id
+  --daily               if set, include daily new cases, otherwise include cumulative
+                        number of cases
+  --ave AVE             include AVE day rolling average. Effective only when --daily
+                        is set. Default=7
+  --per100k             normalize the numbers to 100k population
+  --width WIDTH         width of the diagram
+  --height HEIGHT       height of the diagram
+  --start START         first day to track. Format: yyyymmdd
+  --end END             last day to track. Format: yyyymmdd
+  --png PNG             if set, diagram in png will be saved under this name
+  --html HTML           if set, html output will be saved under this name
+  --show                if set, diagram will be shown in the browser. Only effective
+                        when --html is set
   ```

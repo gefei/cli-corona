@@ -1,4 +1,4 @@
-# IT License
+# MIT License
 #
 # Copyright (c) 2020 Gefei gefei.zhang@pst.ifi.lmu.de
 #
@@ -34,8 +34,8 @@ from argparse import ArgumentParser
 def color_gen():
     yield from itertools.cycle(Category10[10])
 
-def plot_a_country(pic, df, country, daily, ave, per100k, color):
-    df_country=df[df['id'] == country]
+def plot_a_id(pic, df, id, daily, ave, per100k, color):
+    df_country=df[df['id'] == id]
     df_country['dateRep'] = pd.to_datetime(df.date, format='%Y%m%d')
 
     tmp = df_country[['confirmed']]
@@ -49,13 +49,14 @@ def plot_a_country(pic, df, country, daily, ave, per100k, color):
     tx = data.data['dateRep']
     if daily:
         ty = data.data['new']
-        pic.line(tx, ty, legend_label=country+' daily new', color=color, line_dash='dashed')
+        daily_line_dash = 'dashed' if ave > 0 else 'solid'
+        pic.line(tx, ty, legend_label=id+' daily new', color=color, line_dash=daily_line_dash)
         if ave > 0:
             ty=data.data['ave']
-            pic.line(tx, ty, legend_label='%s %d-day rolling average' % (country, ave), color=color)
+            pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
     else:
         ty = data.data['confirmed']
-        pic.line(tx, ty, legend_label=country+' confirmed', color=color, line_dash='dashed')
+        pic.line(tx, ty, legend_label=id+' confirmed', color=color, line_dash='dashed')
 
 
 def get_dataframe(start, end):
@@ -67,20 +68,33 @@ def get_dataframe(start, end):
         df = df[df['date'] <= end]
     return df
 
+
+def search(df, search_item):
+    res = df[['id', 'label', 'label_en']][
+                                         df['label'].str.contains(search_item, case=False)
+                                         | df['label_en'].str.contains(search_item, case=False)
+    ].drop_duplicates()
+    print('id\tlabel\tlabel_en')
+    for idx, row in res.iterrows():
+        print('{}\t{}\t{}'.format(row['id'], row['label'], row['label_en']))
+
 def main(args):
+    df = get_dataframe(args.start, args.end)
+    if args.search_item:
+        search(df, args.search_item)
+        return
     if args.html:
         output_file(args.html)
     colors = color_gen()
-    df = get_dataframe(args.start, args.end)
     print(df[df['id']=='de']['date'])
     first_date, last_date = df['date'].min(), df['date'].max()
-    title = '{}-{}-{}'.format('-'.join(args.countries).upper(), first_date, last_date)
+    title = '{}-{}-{}'.format('-'.join(args.ids).upper(), first_date, last_date)
     p = figure(title=title, width=args.width, height=args.height)
     p.xaxis.formatter=DatetimeTickFormatter(days='%m/%d', months='%m/%d', years='%y%m%d')
-    for country in args.countries:
-        plot_a_country(pic=p,
+    for id in args.ids:
+        plot_a_id(pic=p,
                        df=df,
-                       country=country,
+                       id=id,
                        daily=args.daily,
                        ave=args.ave,
                        per100k=args.per100k,
@@ -93,8 +107,10 @@ def main(args):
 
 if __name__ == '__main__':
     argparser = ArgumentParser('python3 cli-corona.py', description="Cli Corona diagram generator")
-    argparser.add_argument('countries', metavar='countries', type=str, nargs='+',
-                           help="countries ISO 3166-1 alpha-2 code to track in the diagram")
+    argparser.add_argument('--ids', type=str, nargs='*',
+                           help="ids of regions to track in the diagram. Country ids are ISO 3166-1 alpha-2 codes. See also --search")
+    argparser.add_argument('--search', dest='search_item',
+                           help="search for id")
     argparser.add_argument('--daily', action='store_true', dest='daily',
                            help="if set, include daily new cases, otherwise include cumulative number of cases")
     argparser.add_argument('--ave', dest='ave', type=int, default=7,
