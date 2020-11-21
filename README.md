@@ -18,7 +18,8 @@ python3 cli-corona.py [-h] [--ids [IDS [IDS ...]]] [--search SEARCH_ITEM] [--dai
   --ids [IDS [IDS ...]]
                         ids of regions to track in the diagram. Country ids are ISO 3166-1 alpha-2 codes. See
                         also --search
-  --search SEARCH_ITEM  search for id
+  --search [SEARCH [SEARCH ...]]
+                        search for id
   --daily               if set, include daily new cases, otherwise include cumulative number of cases
   --ave AVE             include AVE day rolling average
   --cumu                if set, include cumulative numbers

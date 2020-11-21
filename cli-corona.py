@@ -74,20 +74,22 @@ def search(df, search_item):
                                          df['label'].str.contains(search_item, case=False)
                                          | df['label_en'].str.contains(search_item, case=False)
     ].drop_duplicates()
-    print('id\tlabel\tlabel_en')
     for idx, row in res.iterrows():
         print('{}\t{}\t{}'.format(row['id'], row['label'], row['label_en']))
 
 def main(args):
     df = get_dataframe(args.start, args.end)
-    if args.search_item:
-        search(df, args.search_item)
+    if len(args.search) > 0:
+        print('id\tlabel\tlabel_en')
+        for search_item in args.search:
+            search(df, search_item.strip(','))
         return
     if args.html:
         output_file(args.html)
     colors = color_gen()
     first_date, last_date = df['date'].min(), df['date'].max()
     title = '{}-{}-{}'.format('-'.join(args.ids).upper(), first_date, last_date)
+    if args.per100k: title = title + ' Per 100000'
     p = figure(title=title, width=args.width, height=args.height)
     p.xaxis.formatter=DatetimeTickFormatter(days='%m/%d', months='%m/%d', years='%y%m%d')
     for id in args.ids:
@@ -99,6 +101,7 @@ def main(args):
                        cumu=args.cumu,
                        per100k=args.per100k,
                        color=next(colors))
+    p.legend.location='top_left'
     if args.png:
         export_png(p, filename=args.png)
     if args.html and args.show:
@@ -109,7 +112,7 @@ if __name__ == '__main__':
     argparser = ArgumentParser('python3 cli-corona.py', description="Cli Corona diagram generator")
     argparser.add_argument('--ids', type=str, nargs='*',
                            help="ids of regions to track in the diagram. Country ids are ISO 3166-1 alpha-2 codes. See also --search")
-    argparser.add_argument('--search', dest='search_item',
+    argparser.add_argument('--search', type=str, nargs='*',
                            help="search for id")
     argparser.add_argument('--daily', action='store_true', dest='daily',
                            help="if set, include daily new cases, otherwise include cumulative number of cases")
