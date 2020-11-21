@@ -79,7 +79,7 @@ def search(df, search_item):
 
 def main(args):
     df = get_dataframe(args.start, args.end)
-    if len(args.search) > 0:
+    if args.search and len(args.search) > 0:
         print('id\tlabel\tlabel_en')
         for search_item in args.search:
             search(df, search_item.strip(','))
