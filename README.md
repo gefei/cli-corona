@@ -7,9 +7,10 @@ Cli tool to generate up-to-date diagram of corona data.
 
 ## usage
 ```
-python3 cli-corona.py [-h] [--ids [IDS [IDS ...]]] [--search SEARCH_ITEM] [--daily] [--ave AVE] [--cumu]
-                             [--per100k] [--width WIDTH] [--height HEIGHT] [--start START] [--end END]
-                             [--png PNG] [--html HTML] [--show]
+python3 cli-corona.py [-h] [--ids [IDS [IDS ...]]] [--search [SEARCH [SEARCH ...]]] [--col COL]
+                             [--daily] [--ave AVE] [--cumu] [--per100k] [--width WIDTH] [--height HEIGHT]
+                             [--start START] [--end END] [--png PNG] [--html HTML] [--show]
+
 ```
 
 ### optional arguments
@@ -20,6 +21,7 @@ python3 cli-corona.py [-h] [--ids [IDS [IDS ...]]] [--search SEARCH_ITEM] [--dai
                         also --search
   --search [SEARCH [SEARCH ...]]
                         search for id
+  --col COL             one of "confirmed", "recovered", or "deaths"
   --daily               if set, include daily new cases, otherwise include cumulative number of cases
   --ave AVE             include AVE day rolling average
   --cumu                if set, include cumulative numbers

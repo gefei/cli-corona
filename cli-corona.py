@@ -29,16 +29,16 @@ from bokeh.palettes import Category10
 import pandas as pd
 
 import itertools
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentTypeError
 
 def color_gen():
     yield from itertools.cycle(Category10[10])
 
-def plot_a_id(pic, df, id, daily, ave, cumu, per100k, color):
+def plot_a_id(pic, df, id, daily, ave, cumu, per100k, color, col):
     df_country=df[df['id'] == id]
     df_country['dateRep'] = pd.to_datetime(df.date, format='%Y%m%d')
 
-    tmp = df_country[['confirmed']]
+    tmp = df_country[[col]]
     df_country['new'] = tmp.diff(periods=1,axis=0)
     if (per100k):
         df_country['new'] = df_country['new'] / df_country['population'] * 100000
@@ -55,8 +55,8 @@ def plot_a_id(pic, df, id, daily, ave, cumu, per100k, color):
         ty=data.data['ave']
         pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
     if cumu:
-        ty = data.data['confirmed']
-        pic.line(tx, ty, legend_label=id+' confirmed', color=color, line_dash='dotted')
+        ty = data.data[col]
+        pic.line(tx, ty, legend_label='%s' % (id), color=color, line_dash='dotted')
 
 
 def get_dataframe(start, end):
@@ -88,7 +88,7 @@ def main(args):
         output_file(args.html)
     colors = color_gen()
     first_date, last_date = df['date'].min(), df['date'].max()
-    title = '{}-{}-{}'.format('-'.join(args.ids).upper(), first_date, last_date)
+    title = '{}-{}-{} {}'.format('-'.join(args.ids).upper(), first_date, last_date, args.col)
     if args.per100k: title = title + ' Per 100000'
     p = figure(title=title, width=args.width, height=args.height)
     p.xaxis.formatter=DatetimeTickFormatter(days='%m/%d', months='%m/%d', years='%y%m%d')
@@ -100,13 +100,19 @@ def main(args):
                        ave=args.ave,
                        cumu=args.cumu,
                        per100k=args.per100k,
-                       color=next(colors))
+                       color=next(colors),
+                       col=args.col,
+                       )
     p.legend.location='top_left'
     if args.png:
         export_png(p, filename=args.png)
     if args.html and args.show:
         show(p)
 
+def check_col(col):
+    if col not in {'confirmed', 'recovered', 'deaths'}:
+        raise ArgumentTypeError('must be one of "confirmed", "recovered", or "deaths"')
+    return col
 
 if __name__ == '__main__':
     argparser = ArgumentParser('python3 cli-corona.py', description="Cli Corona diagram generator")
@@ -114,6 +120,8 @@ if __name__ == '__main__':
                            help="ids of regions to track in the diagram. Country ids are ISO 3166-1 alpha-2 codes. See also --search")
     argparser.add_argument('--search', type=str, nargs='*',
                            help="search for id")
+    argparser.add_argument('--col', type=check_col, dest='col', default='confirmed',
+                           help='one of "confirmed", "recovered", or "deaths"')
     argparser.add_argument('--daily', action='store_true', dest='daily',
                            help="if set, include daily new cases, otherwise include cumulative number of cases")
     argparser.add_argument('--ave', dest='ave', type=int, default=0,
