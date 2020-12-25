@@ -47,16 +47,15 @@ def plot_a_id(pic, df, id, daily, ave, cumu, per100k, color, col):
     data = ColumnDataSource(df_country)
 
     tx = data.data['dateRep']
-    if daily:
-        ty = data.data['new']
-        daily_line_dash = 'dashed' if ave > 0 else 'solid'
-        pic.line(tx, ty, legend_label=id+' daily new', color=color, line_dash=daily_line_dash)
-    if ave > 0:
-        ty=data.data['ave']
-        pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
     if cumu:
         ty = data.data[col]
-        pic.line(tx, ty, legend_label='%s' % (id), color=color, line_dash='dotted')
+        pic.line(tx, ty, legend_label='%s' % (id), color=color,)
+    elif daily:
+        ty = data.data['new']
+        pic.line(tx, ty, legend_label=id+' daily new', color=color,)
+    elif ave > 0:
+        ty=data.data['ave']
+        pic.line(tx, ty, legend_label='%s %d-day rolling average' % (id, ave), color=color)
 
 
 def get_dataframe(start, end):
